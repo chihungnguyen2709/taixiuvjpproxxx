@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8"> <!-- Khai bao bang ma ky tu UTF-8 de ho tro tieng Viet -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Cau hinh viewport cho thiet bi di dong -->
+    <title>Siêu game Tài Xỉu - Còn thở còn gỡ 2025</title> <!-- Tieu de trang web -->
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script> <!-- Nhap thu vien Tailwind CSS qua CDN -->
+    <script>
+        // Cau hinh Tailwind CSS de su dung phông chu Inter
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'], // Dat phông chu mac dinh la Inter
+                    },
+                    colors: {
+                        'custom-gold-dark': '#8B4513', // Mau nau vang dam
+                        'custom-gold-light': '#D4AF37', // Mau vang nhat
+                        'custom-bg-dark': '#1A1A1A', // Mau nen cuc dam
+                        'custom-panel-bg': '#33230C', // Mau nen panel chinh
+                        'custom-border-gold': '#FFD700', // Mau vien vang (gold)
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Phông chu Inter tu Google Fonts */
+        @import url('https://fonts/css2?family=Inter:wght@400;600;700;800;900&display=swap'); /* Nhap phông chu Inter */
+
+        body {
+            background: linear-gradient(to bottom, #0d0d0d, #2e2e2e, #0d0d0d); /* Nen gradient toi hon */
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 1rem;
+        }
+
+        .game-container {
+            background-color: #2c2c2c; /* Mau nen toi cho container chinh */
+            border: 4px solid #4a4a4a; /* Vien dam */
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.7); /* Bong do sau */
+        }
+
+        .main-panel {
+            background: linear-gradient(to bottom, #5C4033, #3A2A1A); /* Gradient mau vang nau cho panel chinh */
+            border: 3px solid #custom-border-gold; /* Vien vang */
+            box-shadow: inset 0 0 15px rgba(255, 215, 0, 0.5), 0 0 20px rgba(0, 0, 0, 0.6); /* Bong do noi va ngoai */
+        }
+
+        /* Styling for dice with pips (dots) - improved appearance */
+        .dice {
+            width: 70px; /* Kich thuoc xuc xac */
+            height: 70px;
+            background-color: #fff; /* Mau nen trang */
+            border-radius: 12px; /* Goc tron */
+            display: grid; /* Su dung CSS Grid de dat cham de hon */
+            place-items: center; /* Can giua cac item trong grid */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3), inset 0 0 10px rgba(0, 0, 0, 0.1); /* Bong do va bong noi */
+            position: relative;
+            transform-style: preserve-3d; /* Giu cac chuyen doi 3D cho hieu ung xoay */
+            transition: transform 0.2s ease-out; /* Hieu ung chuyen dong muot ma */
+        }
+
+        .dice .dot {
+            background-color: black;
+            width: 12px; /* Kich thuoc cham lon hon mot chut */
+            height: 12px;
+            border-radius: 50%;
+            position: absolute; /* De dat vi tri tuyet doi */
+        }
+
+        /* Specific dot positioning for each dice face */
+        .dice-1 .dot-center { top: 50%; left: 50%; transform: translate(-50%, -50%); }
+        .dice-2 .dot-top-left { top: 18%; left: 18%; }
+        .dice-2 .dot-bottom-right { bottom: 18%; right: 18%; }
+        .dice-3 .dot-top-left { top: 18%; left: 18%; }
+        .dice-3 .dot-center { top: 50%; left: 50%; transform: translate(-50%, -50%); }
+        .dice-3 .dot-bottom-right { bottom: 18%; right: 18%; }
+        .dice-4 .dot-top-left { top: 18%; left: 18%; }
+        .dice-4 .dot-top-right { top: 18%; right: 18%; }
+        .dice-4 .dot-bottom-left { bottom: 18%; left: 18%; }
+        .dice-4 .dot-bottom-right { bottom: 18%; right: 18%; }
+        .dice-5 .dot-top-left { top: 18%; left: 18%; }
+        .dice-5 .dot-top-right { top: 18%; right: 18%; }
+        .dice-5 .dot-center { top: 50%; left: 50%; transform: translate(-50%, -50%); }
+        .dice-5 .dot-bottom-left { bottom: 18%; left: 18%; }
+        .dice-5 .dot-bottom-right { bottom: 18%; right: 18%; }
+        .dice-6 .dot-top-left { top: 18%; left: 18%; }
+        .dice-6 .dot-top-right { top: 18%; right: 18%; }
+        .dice-6 .dot-middle-left { top: 50%; left: 18%; transform: translateY(-50%); }
+        .dice-6 .dot-middle-right { top: 50%; right: 18%; transform: translateY(-50%); }
+        .dice-6 .dot-bottom-left { bottom: 18%; left: 18%; }
+        .dice-6 .dot-bottom-right { bottom: 18%; right: 18%; }
+
+        /* Keyframe cho hieu ung xuc xac lac (manh hon) */
+        @keyframes shake {
+            0% { transform: translate(0, 0) rotateX(0deg) rotateY(0deg); }
+            10% { transform: translate(-5px, -5px) rotateX(10deg) rotateY(15deg); }
+            20% { transform: translate(5px, 5px) rotateX(-10deg) rotateY(-15deg); }
+            30% { transform: translate(-5px, -5px) rotateX(10deg) rotateY(15deg); }
+            40% { transform: translate(5px, 5px) rotateX(-10deg) rotateY(-15deg); }
+            50% { transform: translate(-5px, -5px) rotateX(10deg) rotateY(15deg); }
+            60% { transform: translate(5px, 5px) rotateX(-10deg) rotateY(-15deg); }
+            70% { transform: translate(-5px, -5px) rotateX(10deg) rotateY(15deg); }
+            80% { transform: translate(5px, 5px) rotateX(-10deg) rotateY(-15deg); }
+            90% { transform: translate(-5px, -5px) rotateX(5deg) rotateY(5deg); }
+            100% { transform: translate(0, 0) rotateX(0deg) rotateY(0deg); }
+        }
+        .shake-animation {
+            animation: shake 0.8s cubic-bezier(.36,.07,.19,.97) both; /* Thoi gian animation dai hon */
+            transform-origin: center center;
+        }
+
+        .bet-button {
+            border: 2px solid #custom-border-gold; /* Vien vang cho nut cuoc */
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4), inset 0 0 10px rgba(255, 215, 0, 0.3); /* Bong do va bong noi */
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5); /* Bong chu */
+        }
+
+        .chip-button {
+            background: linear-gradient(to bottom, #d4af37, #8B4513); /* Gradient cho nut chip */
+            border: 2px solid #FFD700; /* Vien vang */
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4); /* Bong do */
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); /* Bong chu */
+            font-weight: 800; /* Chu dam hon */
+        }
+        .chip-button.selected {
+            background: linear-gradient(to bottom, #FFD700, #B8860B); /* Mau khi chon */
+            box-shadow: 0 0 15px #FFD700; /* Bong do sang hon */
+        }
+
+        .action-button {
+            background: linear-gradient(to bottom, #8B4513, #5C4033); /* Gradient cho nut hanh dong */
+            border: 2px solid #D4AF37; /* Vien vang nhat */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5); /* Bong do */
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); /* Bong chu */
+            font-weight: bold;
+        }
+        .action-button:active {
+            transform: translateY(2px); /* An nut xuong khi nhan */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+        }
+        .action-button.bet-active {
+            background: linear-gradient(to bottom, #00FF00, #00B000); /* Mau xanh la khi dat cuoc */
+            border-color: #008000;
+        }
+    </style>
+</head>
+<body class="font-sans">
+
+    <div class="game-container rounded-3xl max-w-4xl w-full p-6 space-y-8 relative">
+        <!-- Container chinh cua game: goc tron lon, rong toi da 1280px, padding, khoang cach giua cac phan tu con, vi tri relative cho cac phan tu con absolute -->
+
+        <!-- Header - Placeholder for top bar elements like in the image -->
+        <div class="absolute top-0 left-0 right-0 h-16 bg-gray-800 bg-opacity-70 rounded-t-3xl flex items-center justify-between px-6 z-10">
+            <!-- Header bar: vi tri tuyet doi, cao 16 don vi, nen xam trong suot, goc tren tron, flex, can giua, padding ngang, z-index cao hon -->
+            <div class="text-yellow-400 text-sm font-semibold">
+                <span class="mr-2">128.700.000</span> XỈU
+            </div>
+            <div class="text-xl font-bold text-yellow-300">TÀI XỈU</div>
+            <div class="text-yellow-400 text-sm font-semibold">Người chơi luôn là người thắng, Người không chơi chả biết gì về đời</div>
+        </div>
+        <div class="h-16"></div> <!-- Khoang cach de tranh bi header che mat -->
+
+        <!-- Main Game Panel -->
+        <div class="main-panel relative flex flex-col md:flex-row items-center justify-around p-6 rounded-2xl md:min-h-[250px] z-0">
+            <!-- Panel chinh: flex container, theo cot tren mobile, theo hang tren man hinh trung binh tro len; can giua, padding, goc tron vua, z-index thap hon -->
+
+            <!-- Tai Section -->
+            <div id="betTaiPanel" class="flex-1 p-4 text-center space-y-2 cursor-pointer transition duration-200 transform hover:scale-105 rounded-xl border-2 border-transparent hover:border-yellow-300">
+                <!-- Phan TAI: flex-1 (chiem khong gian con lai), padding, can giua chu, khoang cach giua cac phan tu con, con tro tay, hieu ung chuyen dong, vien trong suot (se thay doi khi chon) -->
+                <h2 class="text-yellow-300 text-5xl font-extrabold drop-shadow-lg">TÀI</h2> <!-- Tieu de TAI -->
+                <p class="text-white text-lg font-semibold">(11-17)</p> <!-- Ghi chu pham vi diem -->
+                <p id="taiBetTotal" class="text-yellow-200 text-2xl font-bold">0</p> <!-- Tong tien cuoc cho TAI -->
+            </div>
+
+            <!-- Dice Section -->
+            <div class="flex flex-col items-center justify-center mx-4 my-6 md:my-0">
+                <!-- Khu vuc xuc xac: flex cot, can giua, margin ngang va tren duoi -->
+                <div class="flex space-x-3 mb-4">
+                    <!-- Hien thi dong ho dem nguoc va ma so -->
+                    <span class="text-yellow-400 text-lg font-semibold">#<span id="gameId">191105</span></span>
+                    <span id="countdown" class="text-red-500 text-2xl font-bold animate-pulse">00:00</span>
+                    <span class="text-yellow-400 text-lg font-semibold">ID: 27094</span>
+                </div>
+                <div id="diceDisplay" class="flex space-x-4">
+                    <!-- Hien thi 3 vien xuc xac -->
+                    <div id="die1" class="dice"></div> <!-- Vien xuc xac 1 -->
+                    <div id="die2" class="dice"></div> <!-- Vien xuc xac 2 -->
+                    <div id="die3" class="dice"></div> <!-- Vien xuc xac 3 -->
+                </div>
+                <p id="totalScore" class="text-yellow-300 text-4xl font-extrabold mt-4 drop-shadow-lg">-</p> <!-- Tong diem -->
+            </div>
+
+            <!-- Xiu Section -->
+            <div id="betXiuPanel" class="flex-1 p-4 text-center space-y-2 cursor-pointer transition duration-200 transform hover:scale-105 rounded-xl border-2 border-transparent hover:border-yellow-300">
+                <!-- Phan XIU: tuong tu phan TAI -->
+                <h2 class="text-blue-300 text-5xl font-extrabold drop-shadow-lg">XỈU</h2> <!-- Tieu de XIU -->
+                <p class="text-white text-lg font-semibold">(4-10)</p> <!-- Ghi chu pham vi diem -->
+                <p id="xiuBetTotal" class="text-yellow-200 text-2xl font-bold">0</p> <!-- Tong tien cuoc cho XIU -->
+            </div>
+        </div>
+
+        <!-- Betting Chips and Action Buttons -->
+        <div class="flex flex-col md:flex-row justify-between items-center bg-gray-800 bg-opacity-70 p-4 rounded-xl shadow-lg space-y-4 md:space-y-0 md:space-x-6">
+            <!-- Phan chip va nut hanh dong: flex container, theo cot tren mobile, theo hang tren man hinh trung binh tro len; can giua, nen xam trong suot, padding, goc tron, bong do, khoang cach -->
+
+            <!-- Betting Chips -->
+            <div class="flex flex-wrap justify-center gap-3 md:gap-4 flex-1">
+                <!-- Cac nut chip: flex wrap de xuong dong, can giua, khoang cach giua cac nut -->
+                <button class="chip-button text-white py-2 px-4 rounded-full text-lg transition-all duration-200" data-value="1000">1K</button>
+                <button class="chip-button text-white py-2 px-4 rounded-full text-lg transition-all duration-200" data-value="10000">10K</button>
+                <button class="chip-button text-white py-2 px-4 rounded-full text-lg transition-all duration-200" data-value="50000">50K</button>
+                <button class="chip-button text-white py-2 px-4 rounded-full text-lg transition-all duration-200" data-value="100000">100K</button>
+                <button class="chip-button text-white py-2 px-4 rounded-full text-lg transition-all duration-200" data-value="500000">500K</button>
+                <button class="chip-button text-white py-2 px-4 rounded-full text-lg transition-all duration-200" data-value="5000000">5M</button>
+                <button class="chip-button text-white py-2 px-4 rounded-full text-lg transition-all duration-200" data-value="10000000">10M</button>
+                <button class="chip-button text-white py-2 px-4 rounded-full text-lg transition-all duration-200" data-value="50000000">50M</button>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex justify-center space-x-4 mt-4 md:mt-0">
+                <!-- Cac nut hanh dong: flex, can giua, khoang cach ngang -->
+                <button id="allInBtn" class="action-button text-white py-2 px-5 rounded-lg text-lg hover:brightness-110 transition-all duration-200">ALL-IN</button>
+                <button id="placeBetBtn" class="action-button text-white py-2 px-8 rounded-lg text-lg hover:brightness-110 transition-all duration-200">ĐẶT CƯỢC</button>
+                <button id="cancelBetBtn" class="action-button text-white py-2 px-5 rounded-lg text-lg hover:brightness-110 transition-all duration-200">HỦY</button>
+            </div>
+        </div>
+
+        <!-- Player Balance / Message Area -->
+        <div class="bg-gray-900 bg-opacity-80 p-4 rounded-xl flex justify-between items-center text-yellow-300 font-semibold text-xl shadow-lg">
+            <!-- Khung thong tin nguoi choi: nen xam dam trong suot, padding, goc tron, flex, can giua, chu mau vang, bong do -->
+            <p>Số Dư: <span id="balanceDisplay">1000</span>$</p> <!-- Hien thi so du -->
+            <p id="gameMessage">Chờ lượt mới...</p> <!-- Thong bao game -->
+        </div>
+
+        <!-- Custom Modal (Popup for messages) -->
+        <div id="customModal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center hidden z-50">
+            <!-- Modal: vi tri co dinh, che phu toan man hinh, nen den trong suot 70%, flex, can giua, mac dinh an, z-index cao nhat -->
+            <div class="bg-gradient-to-br from-gray-800 to-gray-900 border-2 border-yellow-500 p-8 rounded-xl shadow-2xl text-center max-w-sm w-full space-y-6 transform scale-95 transition-transform duration-300">
+                <!-- Noi dung modal: nen gradient, vien vang, padding, goc tron, bong do lon, can giua chu, rong toi da 384px, khoang cach, hieu ung transform -->
+                <h3 id="modalTitle" class="text-3xl font-extrabold text-yellow-400 drop-shadow-md"></h3> <!-- Tieu de modal -->
+                <p id="modalMessage" class="text-white text-lg"></p> <!-- Noi dung thong bao modal -->
+                <button id="modalCloseBtn" class="bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-bold py-3 px-8 rounded-lg transition duration-300 transform hover:scale-105 shadow-md">OK</button>
+                <!-- Nut dong modal: mau vang, hieu ung hover, chu xam dam, padding, goc tron, chuyen dong, bong do -->
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Cac phan tu DOM
+        const balanceDisplay = document.getElementById('balanceDisplay'); // Hien thi so du
+        const gameMessage = document.getElementById('gameMessage'); // Hien thi thong bao game
+        const betTaiPanel = document.getElementById('betTaiPanel'); // Panel Tai
+        const betXiuPanel = document.getElementById('betXiuPanel'); // Panel Xiu
+        const taiBetTotalDisplay = document.getElementById('taiBetTotal'); // Tong tien cuoc Tai
+        const xiuBetTotalDisplay = document.getElementById('xiuBetTotal'); // Tong tien cuoc Xiu
+        const diceDisplay = document.getElementById('diceDisplay'); // Container xuc xac
+        const die1Element = document.getElementById('die1'); // Xuc xac 1
+        const die2Element = document.getElementById('die2'); // Xuc xac 2
+        const die3Element = document.getElementById('die3'); // Xuc xac 3
+        const totalScoreDisplay = document.getElementById('totalScore'); // Tong diem
+        const chipButtons = document.querySelectorAll('.chip-button'); // Tat ca cac nut chip
+        const allInBtn = document.getElementById('allInBtn'); // Nut ALL-IN
+        const placeBetBtn = document.getElementById('placeBetBtn'); // Nut DAT CUOC
+        const cancelBetBtn = document.getElementById('cancelBetBtn'); // Nut HUY
+        const countdownDisplay = document.getElementById('countdown'); // Hien thi dong ho dem nguoc
+
+        // Modal elements
+        const customModal = document.getElementById('customModal'); // Modal chinh
+        const modalTitle = document.getElementById('modalTitle'); // Tieu de modal
+        const modalMessage = document.getElementById('modalMessage'); // Noi dung modal
+        const modalCloseBtn = document.getElementById('modalCloseBtn'); // Nut dong modal
+
+        // Trang thai tro choi
+        let balance = 1000000; // So du ban dau (mac dinh 1 trieu de hop voi chip)
+        let currentBetType = ''; // 'tai', 'xiu', hoac ''
+        let currentBetAmount = 0; // So tien cuoc cho luot hien tai
+        let taiBetPool = 0; // Tong tien cuoc hien tai cho Tai
+        let xiuBetPool = 0; // Tong tien cuoc hien tai cho Xiu
+        let selectedChipValue = 0; // Gia tri chip dang duoc chon
+        let countdownTimer; // Bien de luu tru setInterval
+        let timeLeft = 15; // Thoi gian dem nguoc ban dau (giay)
+
+        /**
+         * Hien thi hop thoai thong bao tuy chinh.
+         * @param {string} title - Tieu de cua hop thoai.
+         * @param {string} message - Noi dung thong bao.
+         */
+        function showCustomModal(title, message) {
+            modalTitle.textContent = title;
+            modalMessage.textContent = message;
+            customModal.classList.remove('hidden');
+        }
+
+        /**
+         * An hop thoai thong bao tuy chinh.
+         */
+        function hideCustomModal() {
+            customModal.classList.add('hidden');
+        }
+
+        // Dong modal khi click vao nut dong
+        modalCloseBtn.addEventListener('click', hideCustomModal);
+
+        /**
+         * Ve cac dau cham len mot mat xuc xac HTML dua tren gia tri.
+         * @param {number} value - Gia tri cua mat xuc xac (1-6).
+         * @returns {string} - Chuoi HTML cho cac dau cham.
+         */
+        function getDiceDots(value) {
+            let dotsHtml = '';
+            // CSS classes for dot positioning
+            const dotClasses = {
+                1: ['dot-center'],
+                2: ['dot-top-left', 'dot-bottom-right'],
+                3: ['dot-top-left', 'dot-center', 'dot-bottom-right'],
+                4: ['dot-top-left', 'dot-top-right', 'dot-bottom-left', 'dot-bottom-right'],
+                5: ['dot-top-left', 'dot-top-right', 'dot-center', 'dot-bottom-left', 'dot-bottom-right'],
+                6: ['dot-top-left', 'dot-top-right', 'dot-middle-left', 'dot-middle-right', 'dot-bottom-left', 'dot-bottom-right']
+            };
+
+            if (dotClasses[value]) {
+                dotClasses[value].forEach(cls => {
+                    dotsHtml += `<div class="dot ${cls}"></div>`;
+                });
+            }
+            return dotsHtml;
+        }
+
+        /**
+         * Hien thi hinh anh xuc xac dua tren gia tri.
+         * @param {number} val1 - Gia tri xuc xac 1.
+         * @param {number} val2 - Gia tri xuc xac 2.
+         * @param {number} val3 - Gia tri xuc xac 3.
+         */
+        function renderDice(val1, val2, val3) {
+            die1Element.innerHTML = getDiceDots(val1);
+            die1Element.className = `dice dice-${val1}`; // Them class `dice-X` de dinh vi cham
+
+            die2Element.innerHTML = getDiceDots(val2);
+            die2Element.className = `dice dice-${val2}`;
+
+            die3Element.innerHTML = getDiceDots(val3);
+            die3Element.className = `dice dice-${val3}`;
+        }
+
+        /**
+         * Mo phong viec lac mot vien xuc xac.
+         * @returns {number} - So ngau nhien tu 1 den 6.
+         */
+        function rollDie() {
+            return Math.floor(Math.random() * 6) + 1;
+        }
+
+        /**
+         * Cap nhat hien thi game.
+         */
+        function updateDisplay() {
+            balanceDisplay.textContent = formatCurrency(balance); // Dinh dang tien te
+            taiBetTotalDisplay.textContent = formatCurrency(taiBetPool);
+            xiuBetTotalDisplay.textContent = formatCurrency(xiuBetPool);
+
+            // Cập nhật rạng thái đặt cược
+            if (currentBetAmount > 0 && currentBetType !== '') {
+                placeBetBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                placeBetBtn.classList.add('bet-active');
+                placeBetBtn.disabled = false;
+            } else {
+                placeBetBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                placeBetBtn.classList.remove('bet-active');
+                placeBetBtn.disabled = true;
+            }
+
+            // Cập nhật trạng thái nút HỦY
+            if (currentBetAmount > 0) {
+                 cancelBetBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                 cancelBetBtn.disabled = false;
+            } else {
+                 cancelBetBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                 cancelBetBtn.disabled = true;
+            }
+
+            // Cập nhật trạng thái nút ALL-IN
+            if (balance > 0) {
+                allInBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                allInBtn.disabled = false;
+            } else {
+                allInBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                allInBtn.disabled = true;
+            }
+
+
+            // Reset total score display
+            totalScoreDisplay.textContent = '-';
+            renderDice(1, 1, 1); // Reset dice display to default
+            gameMessage.textContent = "Hãy chọn mức và đặt cược!"; // Thong bao ban dau
+        }
+
+        /**
+         * Dinh dang so thanh tien te.
+         * @param {number} amount - So tien.
+         * @returns {string} - Chuoi tien te.
+         */
+        function formatCurrency(amount) {
+            // Su dung toLocaleString de dinh dang so voi dau phay ngan cach hang nghin
+            return amount.toLocaleString('en-US'); // 'en-US' de co dau phay ngan cach mac dinh
+        }
+
+        /**
+         * Xu ly su kien click vao nut chip.
+         * @param {Event} event - Su kien click.
+         */
+        function handleChipClick(event) {
+            // Loai bo class 'selected' khoi tat ca cac nut chip truoc
+            chipButtons.forEach(btn => btn.classList.remove('selected'));
+
+            // Them class 'selected' vao nut vua click
+            event.currentTarget.classList.add('selected');
+            selectedChipValue = parseInt(event.currentTarget.dataset.value); // Lay gia tri tu data-value
+            currentBetAmount = selectedChipValue; // Cập nhật currentBetAmount khi một chip được chọn
+            updateDisplay(); // Gọi updateDisplay để làm mới trạng thái nút
+        }
+
+        /**
+         * Xu ly khi nguoi choi chon "TÀI" hoac "XỈU".
+         * @param {string} type - Loai cuoc ('tai' hoac 'xiu').
+         */
+        function selectBetType(type) {
+            // Reset hieu ung cho ca hai panel
+            betTaiPanel.classList.remove('border-yellow-300', 'border-red-500');
+            betXiuPanel.classList.remove('border-yellow-300', 'border-blue-500');
+
+            if (type === 'tai') {
+                betTaiPanel.classList.add('border-red-500'); // Bien thanh mau do khi chon Tai
+                currentBetType = 'tai';
+            } else if (type === 'xiu') {
+                betXiuPanel.classList.add('border-blue-500'); // Bien thanh mau xanh khi chon Xiu
+                currentBetType = 'xiu';
+            }
+            updateDisplay(); // Gọi updateDisplay để làm mới trạng thái nút
+        }
+
+        // Gan su kien click cho cac nut chip
+        chipButtons.forEach(button => {
+            button.addEventListener('click', handleChipClick);
+        });
+
+        // Gan su kien click cho panel Tai va Xiu
+        betTaiPanel.addEventListener('click', () => selectBetType('tai'));
+        betXiuPanel.addEventListener('click', () => selectBetType('xiu'));
+
+        // Xu ly nut ALL-IN
+        allInBtn.addEventListener('click', () => {
+            if (balance <= 0) {
+                showCustomModal('Lỗi', 'Số Dư không đủ ALL-IN, vui lòng nạp thêm tiền');
+                return;
+            }
+            if (currentBetType === '') {
+                showCustomModal('Lỗi', 'Vui lòng chọn TÀi hoặc XỈU trước khi ALL-IN.');
+                return;
+            }
+            currentBetAmount = balance; // Dat cuoc toan bo so du
+            gameMessage.textContent = `Bạn đã ALL-IN ${formatCurrency(currentBetAmount)}$ vào ${currentBetType.toUpperCase()}!`;
+            updateDisplay(); // Cap nhat hien thi de hien thi nut DAT CUOC
+        });
+
+        // Xu ly nut DAT CUOC (Place Bet)
+        placeBetBtn.addEventListener('click', () => {
+            if (selectedChipValue === 0 && currentBetAmount === 0) {
+                showCustomModal('Lỗi Đặt Cược', 'Vui lòng chọn số tiền cược (chip) hoac ALL-IN.');
+                return;
+            }
+            if (currentBetType === '') {
+                showCustomModal('Lỗi Đặt Cược', 'Vui lòng chọn TÀi hoặc XỈU.');
+                return;
+            }
+
+            let betToPlace = selectedChipValue;
+            if (currentBetAmount > 0) { // If ALL-IN was used, use that amount
+                betToPlace = currentBetAmount;
+            }
+
+            if (betToPlace === 0) {
+                 showCustomModal('Lỗi Đặt Cược', 'Vui lòng chọn số tiền cược (chip).');
+                 return;
+            }
+
+            if (betToPlace > balance) {
+                showCustomModal('Lỗi Đặt Cược', 'Số dư không đủ, vui lòng nạp thêm.');
+                return;
+            }
+
+            balance -= betToPlace; // Tru tien cuoc khoi so du ngay lap tuc
+
+            if (currentBetType === 'tai') {
+                taiBetPool += betToPlace;
+            } else { // currentBetType === 'xiu'
+                xiuBetPool += betToPlace;
+            }
+
+            gameMessage.textContent = `Bạn đã đặt số phận của bạn ${formatCurrency(betToPlace)}$ vào ${currentBetType.toUpperCase()}!`;
+
+            // Reset trang thai dat cuoc cho luot tiep theo
+            currentBetAmount = 0;
+            selectedChipValue = 0;
+            chipButtons.forEach(btn => btn.classList.remove('selected'));
+            betTaiPanel.classList.remove('border-red-500'); // Reset border highlight
+            betXiuPanel.classList.remove('border-blue-500'); // Reset border highlight
+            currentBetType = ''; // Reset loai cuoc
+
+            startCountdown(); // Bat dau dem nguoc sau khi dat cuoc
+
+            updateDisplay(); // Cap nhat giao dien
+        });
+
+        // Xu ly nut HUY (Cancel Bet)
+        cancelBetBtn.addEventListener('click', () => {
+            // Trong phien ban nay, chung ta don gian la reset cac lua chon cuoc, khong hoan tien ve vi tien da bi tru
+            // khi nhan nut 'DAT CUOC'. De hoan tien, can them logic phuc tap hon voi bien luu tru cac lan cuoc.
+            currentBetAmount = 0;
+            selectedChipValue = 0;
+            currentBetType = '';
+            chipButtons.forEach(btn => btn.classList.remove('selected'));
+            betTaiPanel.classList.remove('border-red-500'); // Reset border highlight
+            betXiuPanel.classList.remove('border-blue-500'); // Reset border highlight
+            gameMessage.textContent = "Đặt cược đã bị hủy mất òi.";
+            updateDisplay();
+        });
+
+
+        /**
+         * Bat dau dong ho dem nguoc va sau do thuc hien lac xuc xac.
+         */
+        function startCountdown() {
+            clearInterval(countdownTimer); // Clear bat ky timer cu nao
+            timeLeft = 15; // Reset thoi gian
+            countdownDisplay.textContent = `00:${timeLeft < 10 ? '0' : ''}${timeLeft}`;
+            gameMessage.textContent = "Đang xem xét tương lai của bạn...";
+
+            countdownTimer = setInterval(() => {
+                timeLeft--;
+                countdownDisplay.textContent = `00:${timeLeft < 10 ? '0' : ''}${timeLeft}`;
+
+                if (timeLeft <= 0) {
+                    clearInterval(countdownTimer);
+                    rollDiceAndDetermineWinner(); // Lac xuc xac khi het gio
+                }
+            }, 1000); // Dem nguoc moi giay
+        }
+
+        /**
+         * Lac xuc xac va xac dinh nguoi chien thang.
+         */
+        function rollDiceAndDetermineWinner() {
+            gameMessage.textContent = "Đang lắc xúc sắc...";
+             // Them hieu ung lac
+            [die1Element, die2Element, die3Element].forEach(die => {
+                die.classList.add('shake-animation');
+            });
+
+            // Sau khi animation ket thuc, lac xuc xac thuc su
+            setTimeout(() => {
+                const die1 = rollDie();
+                const die2 = rollDie();
+                const die3 = rollDie();
+                const total = die1 + die2 + die3;
+
+                renderDice(die1, die2, die3);
+                totalScoreDisplay.textContent = total;
+
+                // Loai bo hieu ung lac sau khi animation ket thuc va dice da duoc hien thi
+                [die1Element, die2Element, die3Element].forEach(die => {
+                    die.classList.remove('shake-animation');
+                });
+
+                let resultMessage = '';
+                let winType = ''; // 'tai', 'xiu', or 'triple'
+
+                // Kiem tra xem co phai la 3 con giong nhau khong (bo ba)
+                const isTriple = (die1 === die2 && die2 === die3);
+
+                if (isTriple) {
+                    resultMessage = `Ba con giống nhau (${die1}-${die1}-${die1})! NHÀ CÁI THẮNG LỚN.`;
+                    winType = 'triple'; // Triple thi ca Tai va Xiu deu thua
+                } else if (total >= 11 && total <= 17) {
+                    resultMessage = `TỔNG ${total} là TÀI!`;
+                    winType = 'tai';
+                } else if (total >= 4 && total <= 10) {
+                    resultMessage = `TỔNG ${total} là XỈU!`;
+                    winType = 'xiu';
+                }
+
+                // Xu ly ket qua cuoc va hoan tien
+                let playerWon = false;
+                if (winType === 'tai' && taiBetPool > 0) {
+                    balance += taiBetPool * 2; // Nhan lai tien cuoc + tien thang
+                    playerWon = true;
+                } else if (winType === 'xiu' && xiuBetPool > 0) {
+                    balance += xiuBetPool * 2; // Nhan lai tien cuoc + tien thang
+                    playerWon = true;
+                }
+                // Neu la triple, nguoi choi thua ca tai va xiu (tien da bi tru tu truoc)
+
+                if (playerWon) {
+                    showCustomModal('Chúc mừng!', `Bạn đã giàu to! ${resultMessage} Bạn đã nhận được ${formatCurrency(taiBetPool > 0 ? taiBetPool * 2 : xiuBetPool * 2)}$`);
+                    gameMessage.textContent = "Bạn đã thắng!";
+                } else {
+                    showCustomModal('Chia buồn!', `Bạn đi nhảy cầu được rồi. ${resultMessage}`);
+                    gameMessage.textContent = "Bạn đã thua!";
+                }
+
+                // Reset tien cuoc cua vong
+                taiBetPool = 0;
+                xiuBetPool = 0;
+                updateDisplay(); // Cap nhat giao dien cuoi cung
+                startNewRound(); // Bat dau vong moi
+            }, 800); // Thoi gian cho phu hop voi animation shake
+        }
+
+        /**
+         * Bat dau vong choi moi.
+         */
+        function startNewRound() {
+            gameMessage.textContent = "Hãy quyết định cho tương tai của bạn! Tỷ Phú hay Nghèo!";
+            totalScoreDisplay.textContent = '-';
+            renderDice(1, 1, 1);
+            // Reset selected chip and bet type for the new round
+            selectedChipValue = 0;
+            currentBetType = '';
+            chipButtons.forEach(btn => btn.classList.remove('selected'));
+            betTaiPanel.classList.remove('border-red-500');
+            betXiuPanel.classList.remove('border-blue-500');
+            updateDisplay();
+        }
+
+        // Khoi tao hien thi khi tai trang
+        updateDisplay();
+    </script>
+</body>
+</html>
